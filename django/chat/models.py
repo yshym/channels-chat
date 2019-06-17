@@ -4,8 +4,6 @@ from django.urls import reverse_lazy
 
 from slugify import slugify
 
-from .validators import validate_room_slug
-
 
 class Room(models.Model):
     name = models.SlugField(max_length=100, unique=True)
