@@ -24,10 +24,9 @@ class MessagesInline(admin.TabularInline):
 
 
 class RoomAdmin(admin.ModelAdmin):
-    list_display = ('name', 'slug', 'author', 'timestamp')
+    list_display = ('name', 'author', 'timestamp')
     list_filter = ('timestamp', 'author')
     search_fields = ('name', 'author')
-    prepopulated_fields = {'slug': ('name',)}
 
     inlines = (
         MessagesInline,

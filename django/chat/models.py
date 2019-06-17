@@ -8,8 +8,7 @@ from .validators import validate_room_slug
 
 
 class Room(models.Model):
-    name = models.CharField(max_length=100, unique=True, validators=[validate_room_slug])
-    slug = models.SlugField(max_length=100, unique=True)
+    name = models.SlugField(max_length=100, unique=True)
     author = models.ForeignKey(
         get_user_model(),
         related_name='room',

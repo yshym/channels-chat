@@ -22,5 +22,4 @@ class RoomCreateForm(forms.ModelForm):
         model = Room
         fields = (
             'name',
-            'slug'
         )
