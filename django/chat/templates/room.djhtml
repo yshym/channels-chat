@@ -1,0 +1,156 @@
+{% extends 'base.djhtml' %}
+
+{% block title %}Chat room{% endblock title %}
+
+
+{% block content %}
+    <h3>{{ object.name }}</h3>
+    <hr />
+
+    <div
+        class="card"
+        id="chat-log"
+        style="overflow-y: auto; height: 70vh;">
+        <div
+            id="chat-log-body"
+            class="card-body">
+            {% for message in object.messages.all %}
+                {% if not forloop.first %}
+                    <br />
+                {% endif %}
+                <div
+                    class="card d-inline-flex
+                           {% if not message.author == user %}
+                               bg-light
+                           {% endif %}
+                           "
+                    style="max-width: 55vw;">
+                    <div class="card-body">
+                        <p class="font-weight-bold">
+                            {{ message.author }}
+                            <span
+                                class="badge text-muted">
+                                {{ message.timestamp|date:'d.m.Y'}},
+                                {{ message.timestamp|time:'H:i' }}
+                            </span>
+                        </p>
+                        <p>{{ message.content }}</p>
+                    </div>
+                </div>
+                <br />
+            {% endfor %}
+        </div>
+    </div>
+
+    <hr/>
+    <div class="input-group">
+        <input
+            id="chat-message-input"
+            class="form-control"
+            type="text"/>
+        <div class="input-group-append">
+            <input
+                id="chat-message-submit"
+                class="btn btn-primary"
+                type="submit"
+                value="Send"/>
+        </div>
+    </div>
+    <br />
+{% endblock content %}
+
+{% block script %}
+    <script>
+        let chat_log = document.querySelector('#chat-log');
+        let chat_log_body = document.querySelector('#chat-log-body');
+        let message_input = document.querySelector('#chat-message-input');
+
+        chat_log.scrollTop = chat_log.scrollHeight;
+
+        if (chat_log.value == '') {
+            {% for message in object.messages.all %}
+                chat_log.value += `{{ message.author }}: {{ message.content }}\n`;
+            {% endfor %}
+        }
+
+        let roomName = {{ room_name_json }};
+
+        let chatSocket = new WebSocket(
+            'ws://' + window.location.host +
+            '/ws/chat/' + roomName + '/'
+        );
+
+        function newMessageDiv(username, timestamp, message) {
+            let cardDiv = document.createElement('div');
+            cardDiv.className = 'card d-inline-flex';
+
+            let cardBodyDiv = document.createElement('div');
+            cardBodyDiv.className = 'card-body';
+
+            let authorP = document.createElement('p');
+            authorP.className = 'font-weight-bold';
+            let authorText = document.createTextNode(username);
+            authorP.appendChild(authorText);
+
+            let timestampSpan = document.createElement('span');
+            timestampSpan.className = 'badge text-muted';
+            let timestampText = document.createTextNode(timestamp);
+            timestampSpan.appendChild(timestampText);
+
+            let contentP = document.createElement('p');
+            let contentText = document.createTextNode(message);
+            contentP.appendChild(contentText);
+
+            authorP.appendChild(timestampSpan);
+            cardBodyDiv.appendChild(authorP);
+            cardBodyDiv.appendChild(contentP);
+            cardDiv.appendChild(cardBodyDiv);
+
+            return cardDiv;
+        }
+
+        chatSocket.onmessage = function(e) {
+            let data = JSON.parse(e.data);
+            let username = data['username'];
+            let message = data['message'];
+            let timestamp = data['timestamp'];
+
+            chat_log_body.appendChild(document.createElement('br'));
+            chat_log_body.appendChild(newMessageDiv(username, timestamp, message));
+            chat_log_body.appendChild(document.createElement('br'));
+
+            if(username != '{{ user.username }}') {
+                messagesCards = document.querySelectorAll('.card.d-inline-flex');
+                lastMessageCard = messagesCards[messagesCards.length - 1];
+                lastMessageCard.className = 'card d-inline-flex bg-light';
+            }
+
+            chat_log.scrollTop = chat_log.scrollHeight;
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+        message_input.focus();
+        message_input.onkeyup = function(e) {
+            if (e.keyCode === 13) {  // enter, return
+                document.querySelector('#chat-message-submit').click();
+            }
+        };
+
+        document.querySelector('#chat-message-submit').onclick = function(e) {
+            if (message_input.value.trim() != '') {
+                let message = message_input.value;
+
+                chatSocket.send(JSON.stringify({
+                    'room_name': '{{ object.name }}',
+                    'username': '{{ user.username }}',
+                    'message': message,
+                }));
+
+                message_input.value = '';
+            }
+        };
+    </script>
+{% endblock script %}
