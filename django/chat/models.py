@@ -7,6 +7,7 @@ from slugify import slugify
 
 class Room(models.Model):
     name = models.SlugField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=100, unique=True)
     author = models.ForeignKey(
         get_user_model(),
         related_name='room',
@@ -16,7 +17,7 @@ class Room(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
-        super(Room, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
