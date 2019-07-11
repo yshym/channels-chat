@@ -23,3 +23,9 @@ class RoomCreateForm(forms.ModelForm):
         fields = (
             'name',
         )
+        error_messages = {
+            'name': {
+                'invalid': 'Enter a valid chat room name consisting of letters, \
+                    numbers, underscores or hyphens.',
+            }
+        }

@@ -59,7 +59,7 @@
                 let roomsNames = {{ rooms_names }};
                 console.log(roomsNames);
                 if (roomsNames.includes(roomName)) {
-                    window.location.pathname = '/chat/' + slugify(roomName) + '/';
+                    window.location.pathname = `/${slugify(roomName)}/`;
                 } else {
                     create_message('Room with this name does not exist!', 'warning');
                     /*setTimeout(
