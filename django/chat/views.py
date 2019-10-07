@@ -43,9 +43,10 @@ class RoomDetailView(LoginRequiredMixin, generic.DetailView):
         return context
 
 
-class RoomCreateView(generic.edit.CreateView):
+class RoomCreateView(LoginRequiredMixin, generic.edit.CreateView):
     template_name = 'room_create.djhtml'
     form_class = RoomCreateForm
+    login_url = 'users:login'
 
     def form_valid(self, form):
         form.instance.author = self.request.user
