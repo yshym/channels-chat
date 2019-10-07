@@ -7,7 +7,6 @@ authors = ["Yevhen Shymotyuk <fly1ngDream@protonamil.com>"]
 [tool.poetry.dependencies]
 python = "^3.7"
 django = "*"
-django-channels = "*"
 channels-redis = "*"
 selenium = "*"
 webdriver-manager = "*"
@@ -16,7 +15,7 @@ python-slugify = "*"
 django-celery-results = "*"
 redis = "*"
 python-dotenv = "*"
-celery = "*"
+channels = "*"
 
 [tool.poetry.dev-dependencies]
 

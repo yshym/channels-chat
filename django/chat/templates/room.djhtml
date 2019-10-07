@@ -76,8 +76,7 @@
         let roomName = {{ room_name_json }};
 
         let chatSocket = new WebSocket(
-            'ws://' + window.location.host +
-            '/ws/chat/' + roomName + '/'
+            `ws://${window.location.host}/ws/chat/${roomName}/`
         );
 
         function newMessageDiv(username, timestamp, message) {
