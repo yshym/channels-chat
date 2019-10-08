@@ -40,19 +40,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
         username = text_data_json.get('username')
         message = text_data_json.get('message')
 
-        # new_message = Message.objects.create(
-        #     room=Room.objects.get(name=room_name),
-        #     author=get_user_model().objects.get(username=username),
-        #     content=message,
-        # )
-
-        new_message = create_message.delay(
+        create_message.delay(
             room_name=room_name,
             username=username,
             content=message,
         )
 
-        # timestamp = timezone.localtime(new_message.timestamp).strftime('%d.%m.%y, %H:%M')
         timestamp = timezone.localtime(timezone.now()).strftime('%d.%m.%Y, %H:%M')
 
         # Send message to room group
